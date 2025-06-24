@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lord Hanuman Murti - Giftoji India</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* White background for the page */
+        }
+        /* Custom color variables for easier use */
+        .bg-primary-red {
+            background-color: rgba(237, 84, 93, 255);
+        }
+        .text-primary-red {
+            color: rgba(237, 84, 93, 255);
+        }
+        .border-primary-red {
+            border-color: rgba(237, 84, 93, 255);
+        }
+        .hover\:bg-primary-red-darker:hover {
+            background-color: rgba(200, 70, 78, 255); /* Slightly darker red for hover */
+        }
+        .hover\:text-primary-red-darker:hover {
+            color: rgba(200, 70, 78, 255);
+        }
+        /* Style for star ratings */
+        .star-rating .star {
+            color: #FFD700; /* Gold color for stars */
+            font-size: 1.25rem; /* Equivalent to text-xl */
+        }
+        .star-rating .star.empty {
+            color: #d1d5db; /* Light gray for empty stars */
+        }
+        .offer-card {
+            min-width: 250px; /* Ensures cards don't shrink too much */
+            flex-shrink: 0; /* Prevents cards from shrinking */
+        }
+        /* Style for the "Link copied!" message */
+        .copy-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .copy-message.show {
+            opacity: 1;
+        }
+        /* New styles for header hiding/showing with increased speed */
+.header-hidden {
+    transform: translateY(-100%);
+    transition: transform 0.2s ease-in-out; /* Speed adjusted to 0.2s */
+}
+.header-visible {
+    transform: translateY(0);
+    transition: transform 0.2s ease-in-out; /* Speed adjusted to 0.2s */
+}
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header id="main-header" class="bg-primary-red text-white py-3 px-4 shadow-md sticky top-0 z-50 header-visible">
+        <div class="container mx-auto flex items-center justify-between flex-wrap gap-2">
+            <!-- Logo -->
+            <a href="homepage.html" class="text-2xl font-bold rounded-md px-2 py-1 hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Giftoji India</a>
+
+            <!-- Search Bar -->
+            <div class="flex-grow max-w-xl mx-4 order-2 md:order-none w-full md:w-auto relative">
+                <div class="relative flex items-center bg-white rounded-full overflow-hidden shadow-md">
+                    <input type="text" id="search-input" placeholder="Search here!" class="flex-grow p-2 pl-4 focus:outline-none text-gray-800 bg-transparent border-none">
+                    <button class="bg-transparent text-primary-red p-2 px-4 h-full flex items-center justify-center hover:text-primary-red-darker transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+                <!-- Search Suggestions Container -->
+                <div id="search-suggestions" class="absolute left-0 right-0 mt-1 bg-white rounded-md shadow-lg hidden z-20 border border-gray-200 max-h-60 overflow-y-auto">
+                    <!-- Suggestions will be populated here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Navigation Links/Icons -->
+            <nav class="flex items-center space-x-4 order-3 md:order-none w-full md:w-auto justify-center md:justify-end">
+                <a href="account.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md transition-colors duration-200">
+                    <span class="text-sm block">Hello, Sign In</span>
+                    <span class="font-bold block">Accounts & Lists</span>
+                </a>
+                <a href="cart.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md relative transition-colors duration-200">
+                    <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-item-count" class="absolute -top-1 -right-1 bg-white text-primary-red text-xs font-bold rounded-full px-2 py-0.5">0</span>
+                    <span class="hidden md:inline ml-1 font-bold">Cart</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sub-navigation / Departments Bar -->
+    <nav class="bg-primary-red text-white py-2 shadow-sm border-t border-white">
+        <div class="container mx-auto flex items-center justify-start overflow-x-hidden overflow-y-hidden whitespace-nowrap scroll-smooth py-1 px-4">
+            <a href="viewallproducts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">All</a>
+            <a href="greatdeals.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Great Deals</a>
+            <a href="birthdaygifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Birthday Gifts</a>
+            <a href="cardecor.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Car Decors</a>
+            <a href="spiritualmurti.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Murti's</a>
+            <a href="homedecors.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Home Decors</a>
+            <a href="giftcards.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Gift Cards</a>
+            <a href="aniversarygifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Anniversary Gifts</a>
+            <a href="diwaligifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Diwali Gifts</a>
+            <a href="3Darts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">3D Arts</a>
+            <a href="fathersdaygifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Fathers Day Gifts</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto mt-6 px-4">
+        <section class="bg-white rounded-lg shadow-lg mb-8 p-6 border border-primary-red flex flex-col md:flex-row items-start">
+            <!-- Product Image Gallery -->
+            <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col items-center p-4 relative">
+                <!-- IMPORTANT: To change the main product image, update the 'src' attribute below and also in the 'product' object in the script. -->
+                <img id="main-product-image" src="Lord Hanuman Murti.png" alt="Lord Hanuman Murti" class="w-full max-h-96 object-contain rounded-lg shadow-md mb-4">
+                <button id="image-share-button" class="absolute top-6 right-6 bg-gray-600 text-white p-2 rounded-full text-lg hover:bg-gray-700 transition-colors duration-200 shadow-md">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+                <div class="flex space-x-2 overflow-x-auto">
+                    <!-- IMPORTANT: The 'src' for the first thumbnail should match the main image's 'src' above. -->
+                    <!-- Update all thumbnail 'src' attributes here if you want more variations. -->
+                    <!-- Ensure your image files are in the same directory as this HTML file, or use full URLs. -->
+                    <img src="Lord Hanuman Murti.png" alt="Thumbnail 1" class="w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-primary-red" onclick="changeMainImage(this.src)">
+                    <img src="https://placehold.co/200x200/ED545D/ffffff?text=Hanuman+2" alt="Thumbnail 2" class="w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-primary-red" onclick="changeMainImage(this.src)">
+                    <img src="https://placehold.co/200x200/ED545D/ffffff?text=Hanuman+3" alt="Thumbnail 3" class="w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-primary-red" onclick="changeMainImage(this.src)">
+                    <img src="https://placehold.co/200x200/ED545D/ffffff?text=Hanuman+4" alt="Thumbnail 4" class="w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-primary-red" onclick="changeMainImage(this.src)">
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="w-full md:w-1/2 lg:w-3/5 p-4" id="product-details">
+                <h1 class="text-3xl font-bold text-primary-red mb-2" id="product-title">Lord Hanuman Murti</h1>
+
+                <!-- Ratings Section -->
+                <div class="flex items-center mb-3">
+                    <div class="star-rating flex items-center mr-2">
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star empty">&#9733;</span>
+                    </div>
+                    <span class="text-gray-600 text-sm mr-2">4.6</span>
+                    <span class="text-blue-600 text-sm cursor-pointer hover:underline" id="total-ratings">1,200 ratings</span>
+                </div>
+
+                <!-- Price and Offers -->
+                <div class="mb-4">
+                    <p class="text-green-600 font-semibold mb-1">Special Online Deal</p>
+                    <div class="flex items-baseline mb-2">
+                        <span class="bg-primary-red text-white text-xl font-bold rounded-md px-2 py-1 mr-2">-30%</span>
+                        <span class="text-primary-red font-bold text-4xl" id="product-price">₹899/-</span>
+                        <span class="text-gray-500 line-through ml-3 text-lg" id="original-price">M.R.P.: ₹1299/-</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">Inclusive of all taxes</p>
+                </div>
+
+                <!-- Offers and Coupons Section -->
+                <div class="mb-6">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-tags text-primary-red mr-2 text-xl"></i>
+                        <h3 class="font-bold text-lg text-primary-red">Offers</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-4 overflow-x-auto pb-2">
+                        <!-- Offer Card 1 -->
+                        <div class="offer-card bg-white rounded-lg shadow-md border border-gray-200 p-4 flex-shrink-0">
+                            <h4 class="font-semibold text-gray-900 mb-1">Cashback</h4>
+                            <p class="text-gray-700 text-sm mb-2">Upto ₹15.00 cashback as Giftoji Pay Balance when...</p>
+                            <a href="#" class="text-blue-600 text-xs hover:underline">1 offer ></a>
+                        </div>
+                        <!-- Offer Card 2 -->
+                        <div class="offer-card bg-white rounded-lg shadow-md border border-gray-200 p-4 flex-shrink-0">
+                            <h4 class="font-semibold text-gray-900 mb-1">Bank Offer</h4>
+                            <p class="text-gray-700 text-sm mb-2">Upto ₹2,000.00 discount on select Credit Cards, Axis...</p>
+                            <a href="#" class="text-blue-600 text-xs hover:underline">18 offers ></a>
+                        </div>
+                        <!-- Offer Card 3 -->
+                        <div class="offer-card bg-white rounded-lg shadow-md border border-gray-200 p-4 flex-shrink-0">
+                            <h4 class="font-semibold text-gray-900 mb-1">Partner Offer</h4>
+                            <p class="text-gray-700 text-sm mb-2">Get upto ₹300 cashback on business purchases...</p>
+                            <a href="#" class="text-blue-600 text-xs hover:underline">1 offer ></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery and Policy Details -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 text-center">
+                    <div class="flex flex-col items-center p-2 rounded-md border border-gray-200 shadow-sm">
+                        <i class="fas fa-truck text-green-600 mb-1 text-2xl"></i>
+                        <span class="text-sm text-gray-700">Free Delivery</span>
+                    </div>
+                    <div class="flex flex-col items-center p-2 rounded-md border border-gray-200 shadow-sm">
+                        <i class="fas fa-hand-holding-usd text-blue-600 mb-1 text-2xl"></i>
+                        <span class="text-sm text-gray-700">Cash on Delivery</span>
+                    </div>
+                    <div class="flex flex-col items-center p-2 rounded-md border border-gray-200 shadow-sm">
+                        <i class="fas fa-redo-alt text-orange-600 mb-1 text-2xl"></i>
+                        <span class="text-sm text-gray-700">15 Days Replacement</span>
+                    </div>
+                    <div class="flex flex-col items-center p-2 rounded-md border border-gray-200 shadow-sm">
+                        <i class="fas fa-award text-purple-600 mb-1 text-2xl"></i>
+                        <span class="text-sm text-gray-700">1 Year Warranty</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-4 mb-6">
+                    <label for="quantity" class="font-semibold text-gray-800">Quantity:</label>
+                    <input type="number" id="quantity" value="1" min="1" class="border border-gray-300 rounded-md p-2 w-20 text-center">
+                    <button class="bg-primary-red text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-primary-red-darker transition-colors duration-200 shadow-md add-to-cart-btn-detail">Add to Cart</button>
+                    <button class="bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md buy-now-btn-detail">Buy Now</button>
+                    <button class="bg-gray-400 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-gray-500 transition-colors duration-200 shadow-md remove-from-cart-btn-detail hidden">Remove</button>
+                </div>
+
+                <!-- Top Brands and Secure Payments -->
+                <div class="bg-gray-100 rounded-lg p-4 mb-6 shadow-sm">
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-shield-alt text-green-700 mr-2 text-xl"></i>
+                        <p class="font-semibold text-gray-800">Shop with Confidence</p>
+                    </div>
+                    <ul class="list-disc list-inside text-gray-700 text-sm">
+                        <li>Associated with <span class="font-bold">Top Brands</span></li>
+                        <li><span class="font-bold">100% Secure Payments</span></li>
+                        <li>Easy Returns & Replacements</li>
+                    </ul>
+                </div>
+
+                <!-- About This Product Section -->
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">About this product:</h3>
+                    <p class="text-gray-700 text-base" id="about-product-description">
+                        This intricately crafted Lord Hanuman Murti embodies strength, devotion, and courage. Made from high-quality polyresin, it serves as an inspiring symbol of unwavering faith and protection. Perfect for your home altar, office desk, or as a meaningful gift for devotees, this idol brings positive energy and spiritual blessings.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <!-- Customer Reviews Section -->
+        <section class="bg-white rounded-lg shadow-lg mb-8 p-6 border border-primary-red">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-1/3">
+                    <h2 class="text-2xl font-bold text-primary-red mb-3">Customer reviews</h2>
+                    <div class="flex items-center mb-2">
+                        <div class="star-rating flex items-center mr-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star empty">&#9733;</span>
+                        </div>
+                        <span class="text-gray-800 font-semibold">4.3 out of 5</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">980 global ratings</p>
+
+                    <!-- Star Breakdown -->
+                    <div class="mb-4">
+                        <div class="flex items-center mb-1">
+                            <span class="text-gray-700 text-sm w-12">5 star</span>
+                            <div class="flex-grow bg-gray-200 rounded-full h-2.5 mx-2">
+                                <div class="bg-orange-500 h-2.5 rounded-full" style="width: 60%;"></div>
+                            </div>
+                            <span class="text-gray-700 text-sm">60%</span>
+                        </div>
+                        <div class="flex items-center mb-1">
+                            <span class="text-gray-700 text-sm w-12">4 star</span>
+                            <div class="flex-grow bg-gray-200 rounded-full h-2.5 mx-2">
+                                <div class="bg-orange-500 h-2.5 rounded-full" style="width: 25%;"></div>
+                            </div>
+                            <span class="text-gray-700 text-sm">25%</span>
+                        </div>
+                        <div class="flex items-center mb-1">
+                            <span class="text-gray-700 text-sm w-12">3 star</span>
+                            <div class="flex-grow bg-gray-200 rounded-full h-2.5 mx-2">
+                                <div class="bg-orange-500 h-2.5 rounded-full" style="width: 8%;"></div>
+                            </div>
+                            <span class="text-gray-700 text-sm">8%</span>
+                        </div>
+                        <div class="flex items-center mb-1">
+                            <span class="text-gray-700 text-sm w-12">2 star</span>
+                            <div class="flex-grow bg-gray-200 rounded-full h-2.5 mx-2">
+                                <div class="bg-orange-500 h-2.5 rounded-full" style="width: 4%;"></div>
+                            </div>
+                            <span class="text-gray-700 text-sm">4%</span>
+                        </div>
+                        <div class="flex items-center mb-1">
+                            <span class="text-gray-700 text-sm w-12">1 star</span>
+                            <div class="flex-grow bg-gray-200 rounded-full h-2.5 mx-2">
+                                <div class="bg-orange-500 h-2.5 rounded-full" style="width: 3%;"></div>
+                            </div>
+                            <span class="text-gray-700 text-sm">3%</span>
+                        </div>
+                    </div>
+                    <a href="#" class="text-blue-600 text-sm hover:underline block mb-4">How are ratings calculated?</a>
+
+                    <h3 class="font-semibold text-gray-800 mb-2">Review this product</h3>
+                    <p class="text-gray-700 text-sm mb-3">Share your thoughts with other customers</p>
+                    <button class="border border-gray-400 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 font-semibold">Write a product review</button>
+                </div>
+
+                <div class="w-full md:w-2/3">
+                    <h3 class="font-bold text-lg text-primary-red mb-3">Customers say</h3>
+                    <p class="text-gray-700 text-sm mb-4">
+                        Customers find this Lucky Tortoise excellent for home decor, being praised for its quality and the positive energy it brings. Many appreciate its attractive design and how it complements various spaces, while others highlight its sturdy build and the peace it adds to their environment.
+                    </p>
+                    <p class="text-gray-500 text-xs mb-4">Generated from the text of customer reviews</p>
+
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Select to learn more</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center">
+                                <i class="fas fa-check text-green-500 mr-1"></i> Value for money
+                            </span>
+                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center">
+                                <i class="fas fa-check text-green-500 mr-1"></i> Quality
+                            </span>
+                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center">
+                                <i class="fas fa-check text-green-500 mr-1"></i> Design
+                            </span>
+                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center">
+                                <i class="fas fa-check text-green-500 mr-1"></i> Positive energy
+                            </span>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-lg text-primary-red mb-3">Reviews with images</h3>
+                    <div class="relative flex items-center">
+                        <button class="absolute left-0 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100" onclick="scrollReviews(-1)">
+                            <i class="fas fa-chevron-left text-gray-700"></i>
+                        </button>
+                        <div id="reviews-carousel" class="flex overflow-x-auto scroll-smooth py-2 px-1 -mx-2">
+                            <img src="https://placehold.co/150x150/ED545D/ffffff?text=User+Review+1" alt="Review Image 1" class="w-36 h-36 object-cover rounded-lg mr-4 flex-shrink-0">
+                            <img src="https://placehold.co/150x150/ED545D/ffffff?text=User+Review+2" alt="Review Image 2" class="w-36 h-36 object-cover rounded-lg mr-4 flex-shrink-0">
+                            <img src="https://placehold.co/150x150/ED545D/ffffff?text=User+Review+3" alt="Review Image 3" class="w-36 h-36 object-cover rounded-lg mr-4 flex-shrink-0">
+                            <img src="https://placehold.co/150x150/ED545D/ffffff?text=User+Review+4" alt="Review Image 4" class="w-36 h-36 object-cover rounded-lg mr-4 flex-shrink-0">
+                            <img src="https://placehold.co/150x150/ED545D/ffffff?text=User+Review+5" alt="Review Image 5" class="w-36 h-36 object-cover rounded-lg mr-4 flex-shrink-0">
+                            <img src="https://placehold.co/150x150/ED545D/ffffff?text=User+Review+6" alt="Review Image 6" class="w-36 h-36 object-cover rounded-lg flex-shrink-0">
+                        </div>
+                        <button class="absolute right-0 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100" onclick="scrollReviews(1)">
+                            <i class="fas fa-chevron-right text-gray-700"></i>
+                        </button>
+                    </div>
+                    <a href="#" class="text-blue-600 text-sm hover:underline mt-4 block">See all photos ></a>
+                </div>
+            </div>
+        </section>
+
+         <!-- Related Products Section -->
+        <section class="bg-white rounded-lg shadow-lg mb-8 p-6 border border-primary-red">
+            <h2 class="text-2xl font-bold text-primary-red mb-6 text-left">You might also like</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Product Card 1: Links to Ganesha Murti product page -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red">
+                    <a href="LG1.html">
+                        <img src="Shree Ganesha Murti.jpg" alt="Lord Shree Ganesha Murti" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Lord Shree Ganesha Murti</h3>
+                            <p class="text-gray-700 text-sm mb-3">Shree Ganesha, the remover of obstacles and bringer of good luck...</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹1199/-</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4 pt-0 flex justify-end">
+                        <div class="flex space-x-2">
+                            <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Add to Cart</button>
+                            <button class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-500 transition-colors duration-200 remove-from-cart-btn hidden">Remove</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 2: Links to Vitthal Rukmini product page -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red">
+                    <a href="VR1.html">
+                        <img src="Shree Vitthal Rukmini Murti.jpg" alt="Shree Vitthal Rukmini Murti" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Shree Vitthal Rukmini Murti</h3>
+                            <p class="text-gray-700 text-sm mb-3">Vitthal Rukmini Murti is the Symbol of Love and Eternal Bond Made up of Fiber Material 8 inch Height.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹720/-</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4 pt-0 flex justify-end">
+                        <div class="flex space-x-2">
+                            <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Add to Cart</button>
+                            <button class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-500 transition-colors duration-200 remove-from-cart-btn hidden">Remove</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 3: Links to Chhatrapati Shivaji Maharaj product page -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red">
+                    <a href="LS1.html">
+                        <img src="Chhatrapati Shivaji Maharaj Murti.jpg" alt="Chhatrapati Shivaji Maharaj Murti" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Chhatrapati Shivaji Maharaj Murti</h3>
+                            <p class="text-gray-700 text-sm mb-3">Chhatrapati Shivaji Maharaj known for his bravery, leadership, and smart war tactics.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹1479/-</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4 pt-0 flex justify-end">
+                        <div class="flex space-x-2">
+                            <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Add to Cart</button>
+                            <button class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-500 transition-colors duration-200 remove-from-cart-btn hidden">Remove</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 5: Links to Shree Ram Lalla product page -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red">
+                    <a href="SRL1.html">
+                        <img src="Shree Ram Lalla Murti.jpg" alt="Shree Ram Lalla Murti" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Shree Ram Lalla Murti</h3>
+                            <p class="text-gray-700 text-sm mb-3">Shree Ram Lalla Portrays the Deity as a Five-Year-Old Child Standing on a Lotus...</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹999/-</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4 pt-0 flex justify-end">
+                        <div class="flex space-x-2">
+                            <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Add to Cart</button>
+                            <button class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-500 transition-colors duration-200 remove-from-cart-btn hidden">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <a href="spiritualmurti.html" class="text-blue-600 text-sm hover:underline mt-4 block">See more ></a>
+            </div>
+        </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-primary-red text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Get to Know Us</h4>
+                    <ul>
+                        <li><a href="aboutus.html" class="text-sm hover:underline">About Us</a></li>
+                        <li><a href="https://wa.me/c/919004305188" class="text-sm hover:underline">Contact Us</a></li>
+                        <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=giftojiindia@gmail.com&su=Website%20Inquiry&body=Hello,%20I%20have%20a%20question%20regarding..." target="_blank" class="text-sm hover:underline" class="text-sm hover:underline">Email: giftojiindia@gmail.com</a></li>
+                        <li><a href="getsupport.html" class="text-sm hover:underline">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Social Media Links</h4>
+                    <ul>
+                        <li><a href="https://www.instagram.com/giftojiindia/" class="text-sm hover:underline">Instagram</a></li>
+                        <li><a href="https://www.facebook.com/people/Giftojiindia/61572679144465/#" class="text-sm hover:underline">Facebook</a></li>
+                        <li><a href="#" class="text-sm hover:underline">LinkedIn</a></li>
+                        <li><a href="#" class="text-sm hover:underline">X Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3 uppercase">Newsletter</h4>
+                    <p class="text-sm mb-4">Get unique, Hatke gift ideas and latest offers delivered to your inbox</p>
+                    <div class="flex items-center bg-white rounded-full p-1 shadow-md">
+                        <input type="email" placeholder="Your e-mail" class="flex-grow p-2 pl-4 rounded-l-full focus:outline-none text-gray-800 bg-transparent">
+                        <button class="bg-primary-red text-white rounded-full p-2 hover:bg-primary-red-darker transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Helpful Links</h4>
+                    <ul>
+                        <li><a href="account.html" class="text-sm hover:underline">Your Account</a></li>
+                        <li><a href="yourorder.html" class="text-sm hover:underline">Your Orders</a></li>
+                        <li><a href="yourwishlist.html" class="text-sm hover:underline">Your Wishlist</a></li>
+                        <li><a href="cart.html" class="text-sm hover:underline">Your Shopping Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white pt-6 mt-6">
+                <p class="text-sm">&copy; 2025, GiftojiIndia.com, Inc. or its affiliates</p>
+                <div class="flex justify-center space-x-4 mt-2">
+                    <a href="#" class="text-white hover:underline text-sm">Refund Policy</a>
+                    <a href="giftoji privacy policy.docx" class="text-white hover:underline text-sm">Privacy Policy</a>
+                    <a href="#" class="text-white hover:underline text-sm">Terms & Condition</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- "Link copied!" message -->
+    <div id="copy-message" class="copy-message">Link copied!</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the cart item count element
+            const cartItemCount = document.getElementById('cart-item-count');
+
+            // Get all "Add to Cart" buttons
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn, .add-to-cart-btn-detail');
+
+            // Get all "Remove from Cart" buttons
+            const removeFromCartButtons = document.querySelectorAll('.remove-from-cart-btn, .remove-from-cart-btn-detail');
+
+            // Function to add item to cart
+            const addToCart = (event) => {
+                let currentCount = parseInt(cartItemCount.textContent);
+                currentCount++;
+                cartItemCount.textContent = currentCount;
+
+                // Hide 'Add to Cart' and show 'Remove' for this specific product
+                const addButton = event.target;
+                const parentDiv = addButton.parentElement;
+                const removeButton = parentDiv.querySelector('.remove-from-cart-btn, .remove-from-cart-btn-detail');
+
+                addButton.classList.add('hidden');
+                if (removeButton) {
+                    removeButton.classList.remove('hidden');
+                }
+            };
+
+            // Function to remove item from cart
+            const removeFromCart = (event) => {
+                let currentCount = parseInt(cartItemCount.textContent);
+                if (currentCount > 0) {
+                    currentCount--;
+                    cartItemCount.textContent = currentCount;
+                }
+
+                // Hide 'Remove' and show 'Add to Cart' for this specific product
+                const removeButton = event.target;
+                const parentDiv = removeButton.parentElement;
+                const addButton = parentDiv.querySelector('.add-to-cart-btn, .add-to-cart-btn-detail');
+
+                removeButton.classList.add('hidden');
+                if (addButton) {
+                    addButton.classList.remove('hidden');
+                }
+            };
+
+            // Add click event listener to each "Add to Cart" button
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', addToCart);
+            });
+
+            // Add click event listener to each "Remove from Cart" button
+            removeFromCartButtons.forEach(button => {
+                button.addEventListener('click', removeFromCart);
+            });
+
+            // --- Search Suggestions Logic ---
+            const searchInput = document.getElementById('search-input');
+            const searchSuggestionsContainer = document.getElementById('search-suggestions');
+
+            // Dummy suggestions for demonstration. In a real app, you'd fetch these from a backend API.
+            const allSuggestions = [
+                "Lord Ganesha Murti",
+                "Lord Hanuman Murti",
+                "Lord Shiva Murti",
+                "Shree Swami Samarth Murti",
+                "Shree Ram Lalla Murti",
+                "Shree Vitthal Rukmini Murti",
+                "Chhatrapati Shivaji Maharaj Murti",
+                "Lucky Tortoise",
+                "Home Decor items",
+                "Birthday Gifts",
+                "Anniversary Gifts",
+                "Diwali Gifts",
+                "Car Accessories",
+                "Kitchen Appliances",
+                "Books",
+                "Electronics",
+                "Fashion",
+                "Jewelry",
+                "Mobile Phones"
+            ];
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                searchSuggestionsContainer.innerHTML = ''; // Clear previous suggestions
+
+                if (query.length > 0) {
+                    const filteredSuggestions = allSuggestions.filter(suggestion =>
+                        suggestion.toLowerCase().includes(query)
+                    );
+
+                    if (filteredSuggestions.length > 0) {
+                        filteredSuggestions.forEach(suggestion => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                            suggestionItem.textContent = suggestion;
+                            suggestionItem.addEventListener('click', () => {
+                                searchInput.value = suggestion;
+                                searchSuggestionsContainer.classList.add('hidden'); // Hide suggestions after selection
+                            });
+                            searchSuggestionsContainer.appendChild(suggestionItem);
+                        });
+                        searchSuggestionsContainer.classList.remove('hidden'); // Show container
+                    } else {
+                        searchSuggestionsContainer.classList.add('hidden'); // Hide if no matches
+                    }
+                } else {
+                    searchSuggestionsContainer.classList.add('hidden'); // Hide if input is empty
+                }
+            });
+
+            // Hide suggestions when clicking outside the search area
+            document.addEventListener('click', (event) => {
+                const isClickInsideSearchBar = searchInput.parentElement.contains(event.target);
+                const isClickInsideSuggestions = searchSuggestionsContainer.contains(event.target);
+
+                if (!isClickInsideSearchBar && !isClickInsideSuggestions) {
+                    searchSuggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            // Optional: Show suggestions when search input is focused, even if empty
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value === '') {
+                     searchSuggestionsContainer.innerHTML = '';
+                    const popularSuggestions = ["Lord Ganesha Murti", "Home Decor items", "Birthday Gifts"];
+                    popularSuggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            searchInput.value = suggestion;
+                            searchSuggestionsContainer.classList.add('hidden');
+                        });
+                        searchSuggestionsContainer.appendChild(suggestionItem);
+                    });
+                     searchSuggestionsContainer.classList.remove('hidden');
+                } else {
+                    searchInput.dispatchEvent(new Event('input'));
+                }
+            });
+
+            // Function to generate star ratings HTML
+            function getStarRatingHtml(rating) {
+                let starsHtml = '';
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 !== 0;
+
+                for (let i = 0; i < fullStars; i++) {
+                    starsHtml += '<span class="star">&#9733;</span>';
+                }
+                if (hasHalfStar) {
+                    starsHtml += '<span class="star empty">&#9733;</span>';
+                }
+                for (let i = 0; i < (5 - Math.ceil(rating)); i++) {
+                    starsHtml += '<span class="star empty">&#9733;</span>';
+                }
+                return starsHtml;
+            }
+
+            // Product data for this specific page (Lord Hanuman Murti)
+            const product = {
+                title: 'Lord Hanuman Murti',
+                description: 'This intricately crafted Lord Hanuman Murti embodies strength, devotion, and courage.',
+                about: 'This intricately crafted Lord Hanuman Murti embodies strength, devotion, and courage. Made from high-quality polyresin, it serves as an inspiring symbol of unwavering faith and protection. Perfect for your home altar, office desk, or as a meaningful gift for devotees, this idol brings positive energy and spiritual blessings.',
+                originalPrice: '₹1299/-',
+                price: '₹899/-',
+                image: 'Lord Hanuman Murti.png', // Corrected image path to .png
+                rating: 4.6,
+                totalRatings: '1,200',
+                highlights: [
+                    'Material: Polyresin',
+                    'Symbolizes: Strength, devotion, courage, protection',
+                    'Ideal for: Home altar, office, gifting'
+                ],
+                additionalImages: [
+                    'https://placehold.co/200x200/ED545D/ffffff?text=Hanuman+View+1',
+                    'https://placehold.co/200x200/ED545D/ffffff?text=Hanuman+View+2',
+                    'https://placehold.co/200x200/ED545D/ffffff?text=Shivaji+View+3'
+                ]
+            };
+
+            // Set content for elements on this page
+            const mainProductImage = document.getElementById('main-product-image');
+            const productTitleElement = document.getElementById('product-title');
+            const originalPriceElement = document.getElementById('original-price');
+            const productPriceElement = document.getElementById('product-price');
+            const totalRatingsElement = document.getElementById('total-ratings');
+            const starRatingContainer = document.querySelector('.star-rating');
+            const aboutProductDescriptionElement = document.getElementById('about-product-description');
+            const highlightsList = document.querySelector('#product-details ul');
+            const imageShareButton = document.getElementById('image-share-button');
+            const copyMessage = document.getElementById('copy-message');
+
+            if (mainProductImage) mainProductImage.src = product.image;
+            if (productTitleElement) productTitleElement.textContent = product.title;
+            if (originalPriceElement) originalPriceElement.textContent = `M.R.P.: ${product.originalPrice}`;
+            if (productPriceElement) productPriceElement.textContent = product.price;
+            if (totalRatingsElement) totalRatingsElement.textContent = `${product.totalRatings} ratings`;
+            if (starRatingContainer) starRatingContainer.innerHTML = getStarRatingHtml(product.rating);
+            if (aboutProductDescriptionElement) aboutProductDescriptionElement.textContent = product.about;
+
+            if (highlightsList) {
+                highlightsList.innerHTML = '';
+                product.highlights.forEach(highlight => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = highlight;
+                    highlightsList.appendChild(listItem);
+                });
+            }
+
+            // Populate thumbnails dynamically based on product.additionalImages
+            const thumbnailContainer = document.querySelector('.flex.space-x-2.overflow-x-auto');
+            if (thumbnailContainer) {
+                thumbnailContainer.innerHTML = ''; // Clear existing thumbnails
+
+                // Add primary image as the first thumbnail
+                const primaryThumbnail = document.createElement('img');
+                primaryThumbnail.src = product.image;
+                primaryThumbnail.alt = 'Thumbnail 1';
+                primaryThumbnail.classList.add('w-20', 'h-20', 'object-cover', 'rounded-md', 'cursor-pointer', 'border-2', 'border-primary-red');
+                primaryThumbnail.onclick = () => changeMainImage(primaryThumbnail.src);
+                thumbnailContainer.appendChild(primaryThumbnail);
+
+                if (product.additionalImages) {
+                    product.additionalImages.forEach((src, index) => {
+                        const thumbnail = document.createElement('img');
+                        thumbnail.src = src;
+                        thumbnail.alt = `Thumbnail ${index + 2}`;
+                        thumbnail.classList.add('w-20', 'h-20', 'object-cover', 'rounded-md', 'cursor-pointer', 'border-2', 'border-transparent', 'hover:border-primary-red');
+                        thumbnail.onclick = () => changeMainImage(thumbnail.src);
+                        thumbnailContainer.appendChild(thumbnail);
+                    });
+                }
+            }
+
+
+            // Image Thumbnail Functionality
+            window.changeMainImage = function(src) {
+                document.getElementById('main-product-image').src = src;
+                const thumbnails = document.querySelectorAll('.flex.space-x-2.overflow-x-auto img');
+                thumbnails.forEach(thumb => {
+                    if (thumb.src === src) {
+                        thumb.classList.add('border-primary-red');
+                        thumb.classList.remove('border-transparent');
+                    } else {
+                        thumb.classList.remove('border-primary-red');
+                        thumb.classList.add('border-transparent');
+                    }
+                });
+            };
+
+            // Share Button Functionality
+            if (imageShareButton && copyMessage) {
+                imageShareButton.addEventListener('click', async () => {
+                    const productTitle = productTitleElement ? productTitleElement.textContent : 'Check out this product!';
+                    const productUrl = window.location.href;
+
+                    if (navigator.share) {
+                        try {
+                            await navigator.share({
+                                title: productTitle,
+                                url: productUrl
+                            });
+                            console.log('Product shared successfully');
+                        } catch (error) {
+                            console.error('Error sharing product:', error);
+                        }
+                    } else {
+                        // Fallback: Copy to clipboard
+                        try {
+                            const tempInput = document.createElement('textarea');
+                            tempInput.value = productUrl;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(tempInput);
+
+                            copyMessage.classList.add('show');
+                            setTimeout(() => {
+                                copyMessage.classList.remove('show');
+                            }, 2000); // Hide after 2 seconds
+                            console.log('Product URL copied to clipboard');
+                        } catch (err) {
+                            console.error('Failed to copy URL:', err);
+                        }
+                    }
+                });
+            }
+            // Scroll functionality for reviews carousel
+            window.scrollReviews = function(direction) {
+                const carousel = document.getElementById('reviews-carousel');
+                const scrollAmount = 200; // Adjust as needed
+                carousel.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            };
+        });
+        // --- Header Visibility on Scroll (Revised) ---
+const mainHeader = document.getElementById('main-header');
+let lastScrollY = 0; // Initialize to 0 for initial state at the top
+
+window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY && currentScrollY > 0) {
+        // Scrolling down AND not at the very top, so hide the header
+        mainHeader.classList.remove('header-visible');
+        mainHeader.classList.add('header-hidden');
+    } else if (currentScrollY === 0) {
+        // At the very top of the page, so show the header
+        mainHeader.classList.remove('header-hidden');
+        mainHeader.classList.add('header-visible');
+    }
+    // If scrolling up but not at the very top (currentScrollY > 0),
+    // the header remains in its current state (hidden).
+
+    lastScrollY = currentScrollY; // Update last scroll position for the next check
+});
+    </script>
+</body>
+</html>

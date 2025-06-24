@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers - Giftoji India</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+        .bg-primary-red {
+            background-color: rgba(237, 84, 93, 255);
+        }
+        .text-primary-red {
+            color: rgba(237, 84, 93, 255);
+        }
+        .border-primary-red {
+            border-color: rgba(237, 84, 93, 255);
+        }
+        .hover\:bg-primary-red-darker:hover {
+            background-color: rgba(200, 70, 78, 255);
+        }
+        /* Zoom effect for offer cards */
+        .offer-card {
+            transition: transform 0.3s ease-in-out;
+        }
+        .offer-card:hover {
+            transform: scale(1.03); /* Slightly zoom in on hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section (Copied from homepage.html) -->
+    <header class="bg-primary-red text-white py-3 px-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between flex-wrap gap-2">
+            <!-- Logo -->
+            <a href="homepage.html" class="text-2xl font-bold rounded-md px-2 py-1 hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Giftoji India</a>
+
+            <!-- Search Bar -->
+            <div class="flex-grow max-w-xl mx-4 order-2 md:order-none w-full md:w-auto relative">
+                <div class="relative flex items-center bg-white rounded-full overflow-hidden shadow-md">
+                    <input type="text" id="search-input" placeholder="Search here!" class="flex-grow p-2 pl-4 focus:outline-none text-gray-800 bg-transparent border-none">
+                    <button class="bg-transparent text-primary-red p-2 px-4 h-full flex items-center justify-center hover:text-primary-red-darker transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+                <div id="search-suggestions" class="absolute left-0 right-0 mt-1 bg-white rounded-md shadow-lg hidden z-20 border border-gray-200 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- Navigation Links/Icons -->
+            <nav class="flex items-center space-x-4 order-3 md:order-none w-full md:w-auto justify-center md:justify-end">
+                <a href="account.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md transition-colors duration-200">
+                    <span class="text-sm block">Hello, Sign In</span>
+                    <span class="font-bold block">Accounts & Lists</span>
+                </a>
+                <a href="cart.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md relative transition-colors duration-200">
+                    <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-item-count" class="absolute -top-1 -right-1 bg-white text-primary-red text-xs font-bold rounded-full px-2 py-0.5">0</span>
+                    <span class="hidden md:inline ml-1 font-bold">Cart</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sub-navigation / Departments Bar (Copied from homepage.html) -->
+    <!-- <nav class="bg-primary-red text-white py-2 shadow-sm border-t border-white">
+        <div class="container mx-auto flex items-center justify-start overflow-x-hidden overflow-y-hidden whitespace-nowrap scroll-smooth py-1 px-4">
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">All</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Great Deals</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Birthday Gifts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Car Decors</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Murti's</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Home Decors</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Gift Cards</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Anniversary Gifts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Diwali Gifts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">3D Arts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Fathers Day Gifts</a>
+        </div>
+    </nav> -->
+
+    <!-- Main Content Area - Offers Page -->
+    <main class="container mx-auto mt-8 p-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 border border-primary-red max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold text-primary-red mb-6 text-center">Exclusive Offers & Deals!</h1>
+            
+            <p class="text-gray-700 leading-relaxed mb-8 text-center">
+                Discover amazing discounts, cashback offers, and special promotions on your favorite products. Don't miss out!
+            </p>
+
+            <div id="offers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Offer cards will be dynamically loaded here by JavaScript -->
+                <p class="text-center col-span-full text-gray-600">Loading offers...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section (Copied from homepage.html) -->
+    <footer class="bg-primary-red text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Get to Know Us</h4>
+                    <ul>
+                        <li><a href="about-us.html" class="text-sm hover:underline">About Us</a></li>
+                        <li><a href="#" class="text-sm hover:underline">Contact Us</a></li>
+                        <li><a href="#" class="text-sm hover:underline">Email: giftojiindia@gmail.com</a></li>
+                        <li><a href="#" class="text-sm hover:underline">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Social Media Links</h4>
+                    <ul>
+                        <li><a href="https://www.instagram.com/giftojiindia/" class="text-sm hover:underline">Instagram</a></li>
+                        <li><a href="https://www.facebook.com/people/Giftojiindia/61572679144465/#" class="text-sm hover:underline">Facebook</a></li>
+                        <li><a href="#" class="text-sm hover:underline">LinkedIn</a></li>
+                        <li><a href="#" class="text-sm hover:underline">X Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3 uppercase">Newsletter</h4>
+                    <p class="text-sm mb-4">Get unique, Hatke gift ideas and latest offers delivered to your inbox</p>
+                    <div class="flex items-center bg-white rounded-full p-1 shadow-md">
+                        <input type="email" placeholder="Your e-mail" class="flex-grow p-2 pl-4 rounded-l-full focus:outline-none text-gray-800 bg-transparent">
+                        <button class="bg-primary-red text-white rounded-full p-2 hover:bg-primary-red-darker transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Helpful Links</h4>
+                    <ul>
+                        <li><a href="account.html" class="text-sm hover:underline">Your Account</a></li>
+                        <li><a href="#" class="text-sm hover:underline">Your Orders</a></li>
+                        <li><a href="#" class="text-sm hover:underline">Your Wishlist</a></li>
+                        <li><a href="cart.html" class="text-sm hover:underline">Your Shopping Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white pt-6 mt-6">
+                <p class="text-sm">&copy; 2025, GiftojiIndia.com, Inc. or its affiliates</p>
+                <div class="flex justify-center space-x-4 mt-2">
+                    <a href="#" class="text-white hover:underline text-sm">Refund Policy</a>
+                    <a href="giftoji privacy policy.docx" class="text-white hover:underline text-sm">Privacy Policy</a>
+                    <a href="#" class="text-white hover:underline text-sm">Terms & Condition</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dummy offer data
+            const offers = [
+                {
+                    id: 'offer1',
+                    title: 'Flat 10% Off on All Murtis!',
+                    description: 'Get an instant 10% discount on any Lord Murti. Valid for a limited time.',
+                    image: 'https://placehold.co/400x200/ED545D/ffffff?text=10%25+OFF+Murtis',
+                    validity: 'Expires: 31st July 2025',
+                    link: '#'
+                },
+                {
+                    id: 'offer2',
+                    title: 'Cashback on First Purchase!',
+                    description: 'New users get 5% cashback on their first order above ₹500. Max cashback ₹100.',
+                    image: 'https://placehold.co/400x200/4CAF50/ffffff?text=5%25+Cashback',
+                    validity: 'Offer ends soon!',
+                    link: '#'
+                },
+                {
+                    id: 'offer3',
+                    title: 'Free Shipping on Home Decor!',
+                    description: 'Enjoy free standard shipping on all home decor items. No minimum purchase!',
+                    image: 'https://placehold.co/400x200/2196F3/ffffff?text=Free+Shipping',
+                    validity: 'Limited period offer.',
+                    link: '#'
+                },
+                {
+                    id: 'offer4',
+                    title: 'Buy 1 Get 1 on Select Car Decors!',
+                    description: 'Add two eligible car decor items to your cart, and get one free.',
+                    image: 'https://placehold.co/400x200/FFC107/ffffff?text=BOGO+Car+Decors',
+                    validity: 'While stocks last.',
+                    link: '#'
+                },
+                {
+                    id: 'offer5',
+                    title: 'Diwali Special: Up to 30% Off!',
+                    description: 'Celebrate Diwali with grand savings on gifts and festive decor.',
+                    image: 'https://placehold.co/400x200/FF5722/ffffff?text=Diwali+Sale',
+                    validity: 'Valid till Diwali.',
+                    link: '#'
+                }
+            ];
+
+            const offersContainer = document.getElementById('offers-container');
+            offersContainer.innerHTML = ''; // Clear loading message
+
+            offers.forEach(offer => {
+                const offerCard = document.createElement('div');
+                offerCard.classList.add('offer-card', 'bg-white', 'rounded-lg', 'shadow-lg', 'overflow-hidden', 'border', 'border-gray-200', 'hover:shadow-xl'); // Added 'offer-card' class
+                offerCard.innerHTML = `
+                    <img src="${offer.image}" alt="${offer.title}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl mb-2 text-primary-red">${offer.title}</h3>
+                        <p class="text-gray-700 text-sm mb-3">${offer.description}</p>
+                        <p class="text-gray-600 text-xs font-semibold mb-4">${offer.validity}</p>
+                        <a href="${offer.link}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                            View Offer
+                        </a>
+                    </div>
+                `;
+                offersContainer.appendChild(offerCard);
+            });
+
+
+            // Header Search Suggestions Logic (Copied for consistency)
+            const searchInput = document.getElementById('search-input');
+            const searchSuggestionsContainer = document.getElementById('search-suggestions');
+            const cartItemCount = document.getElementById('cart-item-count'); 
+
+            const allSuggestions = [
+                "Lord Ganesha Murti", "Lord Hanuman Murti", "Lord Shiva Murti",
+                "Shree Swami Samarth Murti", "Shree Ram Lalla Murti", "Shree Vitthal Rukmini Murti",
+                "Chhatrapati Shivaji Maharaj Murti", "Lucky Tortoise", "Home Decor items",
+                "Birthday Gifts", "Anniversary Gifts", "Diwali Gifts", "Car Accessories",
+                "Kitchen Appliances", "Books", "Electronics", "Fashion", "Jewelry", "Mobile Phones"
+            ];
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                searchSuggestionsContainer.innerHTML = '';
+
+                if (query.length > 0) {
+                    const filteredSuggestions = allSuggestions.filter(suggestion =>
+                        suggestion.toLowerCase().includes(query)
+                    );
+
+                    if (filteredSuggestions.length > 0) {
+                        filteredSuggestions.forEach(suggestion => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                            suggestionItem.textContent = suggestion;
+                            suggestionItem.addEventListener('click', () => {
+                                searchInput.value = suggestion;
+                                searchSuggestionsContainer.classList.add('hidden');
+                            });
+                            searchSuggestionsContainer.appendChild(suggestionItem);
+                        });
+                        searchSuggestionsContainer.classList.remove('hidden');
+                    } else {
+                        searchSuggestionsContainer.classList.add('hidden');
+                    }
+                } else {
+                    searchSuggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                const isClickInsideSearchBar = searchInput.parentElement.contains(event.target);
+                const isClickInsideSuggestions = searchSuggestionsContainer.contains(event.target);
+
+                if (!isClickInsideSearchBar && !isClickInsideSuggestions) {
+                    searchSuggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value === '') {
+                     searchSuggestionsContainer.innerHTML = '';
+                    const popularSuggestions = ["Lord Ganesha Murti", "Home Decor items", "Birthday Gifts"];
+                    popularSuggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            searchInput.value = suggestion;
+                            searchSuggestionsContainer.classList.add('hidden');
+                        });
+                        searchSuggestionsContainer.appendChild(suggestionItem);
+                    });
+                     searchSuggestionsContainer.classList.remove('hidden');
+                } else {
+                    searchInput.dispatchEvent(new Event('input'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Cards - Giftoji India</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+        .bg-primary-red { background-color: rgba(237, 84, 93, 255); }
+        .text-primary-red { color: rgba(237, 84, 93, 255); }
+        .border-primary-red { border-color: rgba(237, 84, 93, 255); }
+        .hover\:bg-primary-red-darker:hover { background-color: rgba(200, 70, 78, 255); }
+        .hover\:text-primary-red-darker:hover { color: rgba(200, 70, 78, 255); }
+        .product-card-zoom { transition: transform 0.3s ease-in-out; }
+        .product-card-zoom:hover { transform: scale(1.05); }
+        .product-card-zoom:focus-within { transform: scale(1.05); box-shadow: 0 0 0 3px rgba(237, 84, 93, 0.5); outline: none; }
+        .header-hidden { transform: translateY(-100%); transition: transform 0.2s ease-in-out; }
+        .header-visible { transform: translateY(0); transition: transform 0.2s ease-in-out; }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header id="main-header" class="bg-primary-red text-white py-3 px-4 shadow-md sticky top-0 z-50 header-visible">
+        <div class="container mx-auto flex items-center justify-between flex-wrap gap-2">
+            <a href="homepage.html" class="text-2xl font-bold rounded-md px-2 py-1 hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Giftoji India</a>
+            <div class="flex-grow max-w-xl mx-4 order-2 md:order-none w-full md:w-auto relative">
+                <div class="relative flex items-center bg-white rounded-full overflow-hidden shadow-md">
+                    <input type="text" id="search-input" placeholder="Search here!" class="flex-grow p-2 pl-4 focus:outline-none text-gray-800 bg-transparent border-none">
+                    <button class="bg-transparent text-primary-red p-2 px-4 h-full flex items-center justify-center hover:text-primary-red-darker transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+                <div id="search-suggestions" class="absolute left-0 right-0 mt-1 bg-white rounded-md shadow-lg hidden z-20 border border-gray-200 max-h-60 overflow-y-auto"></div>
+            </div>
+            <nav class="flex items-center space-x-4 order-3 md:order-none w-full md:w-auto justify-center md:justify-end">
+                <a href="account.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md transition-colors duration-200">
+                    <span class="text-sm block">Hello, Sign In</span>
+                    <span class="font-bold block">Accounts & Lists</span>
+                </a>
+                <a href="cart.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md relative transition-colors duration-200">
+                    <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-item-count" class="absolute -top-1 -right-1 bg-white text-primary-red text-xs font-bold rounded-full px-2 py-0.5">0</span>
+                    <span class="hidden md:inline ml-1 font-bold">Cart</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sub-navigation / Departments Bar -->
+    <nav class="bg-primary-red text-white py-2 shadow-sm border-t border-white">
+        <div class="container mx-auto flex items-center justify-start overflow-x-hidden overflow-y-hidden whitespace-nowrap scroll-smooth py-1 px-4">
+            <a href="viewallproducts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">All</a>
+            <a href="greatdeals.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Great Deals</a>
+            <a href="birthdaygifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Birthday Gifts</a>
+            <a href="cardecor.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Car Decors</a>
+            <a href="spiritualmurti.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Spiritual Murti</a>
+            <a href="homedecors.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Home Decors</a>
+            <a href="giftcards.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Gift Cards</a>
+            <a href="aniversarygifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Anniversary Gifts</a>
+            <a href="diwaligifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Diwali Gifts</a>
+            <a href="3darts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">3D Arts</a>
+            <a href="fathersdaygifts.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Fathers Day Gifts</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto mt-6 px-4">
+        <section class="bg-white rounded-lg shadow-lg mb-8 p-6 text-center border border-primary-red">
+            <h1 class="text-4xl font-bold text-primary-red mb-4">Give the Gift of Choice!</h1>
+            <p class="text-gray-700 text-lg mb-6">Our Giftoji India gift cards are perfect for any occasion, allowing your loved ones to choose their perfect gift.</p>
+            <img src="https://placehold.co/800x200/ED545D/ffffff?text=Gift+Cards+Banner" alt="Gift Cards Banner" class="w-full h-auto object-cover rounded-lg shadow-md mb-6">
+            <p class="text-gray-600 text-sm">Available in various denominations!</p>
+        </section>
+
+        <section class="bg-white rounded-lg shadow-lg mb-8 p-6 border border-primary-red">
+            <h2 class="text-2xl font-bold text-primary-red mb-6 text-left">Our Gift Card Selection</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Product Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red product-card-zoom relative">
+                    <a href="#">
+                        <img src="https://placehold.co/600x400/ED545D/ffffff?text=E-Gift+Card" alt="E-Gift Card" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">E-Gift Card (Email Delivery)</h3>
+                            <p class="text-gray-700 text-sm mb-3">Instant delivery via email, perfect for last-minute gifts.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹500 - ₹5000</span>
+                                <div class="flex space-x-2">
+                                    <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Select Value</button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="text-gray-500 hover:text-primary-red add-to-wishlist-btn absolute top-2 right-2">
+                        <i class="far fa-heart text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Product Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red product-card-zoom relative">
+                    <a href="#">
+                        <img src="https://placehold.co/600x400/ED545D/ffffff?text=Physical+Gift+Card" alt="Physical Gift Card" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Physical Gift Card (Mail Delivery)</h3>
+                            <p class="text-gray-700 text-sm mb-3">Beautifully designed card, shipped directly to recipient.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹1000 - ₹10000</span>
+                                <div class="flex space-x-2">
+                                    <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Select Value</button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="text-gray-500 hover:text-primary-red add-to-wishlist-btn absolute top-2 right-2">
+                        <i class="far fa-heart text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Product Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red product-card-zoom relative">
+                    <a href="#">
+                        <img src="https://placehold.co/600x400/ED545D/ffffff?text=Birthday+Gift+Card" alt="Birthday Gift Card" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Birthday Themed Gift Card</h3>
+                            <p class="text-gray-700 text-sm mb-3">Make their birthday extra special with a themed card.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹750 - ₹7500</span>
+                                <div class="flex space-x-2">
+                                    <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Select Value</button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="text-gray-500 hover:text-primary-red add-to-wishlist-btn absolute top-2 right-2">
+                        <i class="far fa-heart text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Product Card 4 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-white hover:border-primary-red product-card-zoom relative">
+                    <a href="#">
+                        <img src="https://placehold.co/600x400/ED545D/ffffff?text=Anniversary+Gift+Card" alt="Anniversary Gift Card" class="w-full h-48 object-contain">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2 text-primary-red">Anniversary Gift Card</h3>
+                            <p class="text-gray-700 text-sm mb-3">Celebrate their milestone with a thoughtful gift card.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-red font-bold text-xl">₹1000 - ₹10000</span>
+                                <div class="flex space-x-2">
+                                    <button class="bg-primary-red text-white px-4 py-2 rounded-md text-sm hover:bg-primary-red-darker transition-colors duration-200 add-to-cart-btn">Select Value</button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="text-gray-500 hover:text-primary-red add-to-wishlist-btn absolute top-2 right-2">
+                        <i class="far fa-heart text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- <div class="text-center mt-8">
+                <a href="#" class="text-blue-600 hover:underline font-semibold text-lg">View All Gift Cards <i class="fas fa-arrow-right ml-2"></i></a>
+            </div> -->
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-primary-red text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Get to Know Us</h4>
+                    <ul>
+                        <li><a href="aboutus.html" class="text-sm hover:underline">About Us</a></li>
+                        <li><a href="https://wa.me/c/919004305188" class="text-sm hover:underline">Contact Us</a></li>
+                        <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=giftojiindia@gmail.com&su=Website%20Inquiry&body=Hello,%20I%20have%20a%20question%20regarding..." target="_blank" class="text-sm hover:underline" class="text-sm hover:underline">Email Us</a></li>
+                        <li><a href="getsupport.html" class="text-sm hover:underline">Get Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Social Media Links</h4>
+                    <ul>
+                        <li><a href="https://www.instagram.com/giftojiindia/" class="text-sm hover:underline">Instagram</a></li>
+                        <li><a href="https://www.facebook.com/people/Giftojiindia/61572679144465/#" class="text-sm hover:underline">Facebook</a></li>
+                        <li><a href="#" class="text-sm hover:underline">LinkedIn</a></li>
+                        <li><a href="#" class="text-sm hover:underline">X Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3 uppercase">Newsletter</h4>
+                    <p class="text-sm mb-4">Get unique, Hatke gift ideas and latest offers delivered to your inbox</p>
+                    <div class="flex items-center bg-white rounded-full p-1 shadow-md">
+                        <input type="email" placeholder="Your e-mail" class="flex-grow p-2 pl-4 rounded-l-full focus:outline-none text-gray-800 bg-transparent">
+                        <button class="bg-primary-red text-white rounded-full p-2 hover:bg-primary-red-darker transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Helpful Links</h4>
+                    <ul>
+                        <li><a href="account.html" class="text-sm hover:underline">Your Account</a></li>
+                        <li><a href="yourorder.html" class="text-sm hover:underline">Your Orders</a></li>
+                        <li><a href="yourwishlist.html" class="text-sm hover:underline">Your Wishlist</a></li>
+                        <li><a href="cart.html" class="text-sm hover:underline">Your Shopping Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white pt-6 mt-6">
+                <p class="text-sm">&copy; 2025, GiftojiIndia.com, Inc. or its affiliates</p>
+                <div class="flex justify-center space-x-4 mt-2">
+                    <a href="#" class="text-white hover:underline text-sm">Refund Policy</a>
+                    <a href="giftoji privacy policy.docx" class="text-white hover:underline text-sm">Privacy Policy</a>
+                    <a href="#" class="text-white hover:underline text-sm">Terms & Condition</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartItemCount = document.getElementById('cart-item-count');
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+            const removeFromCartButtons = document.querySelectorAll('.remove-from-cart-btn');
+            const addToWishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
+
+            const addToCart = (event) => {
+                let currentCount = parseInt(cartItemCount.textContent);
+                currentCount++;
+                cartItemCount.textContent = currentCount;
+                const addButton = event.target;
+                const parentDiv = addButton.closest('.flex.space-x-2');
+                if (parentDiv) {
+                    const removeButton = parentDiv.querySelector('.remove-from-cart-btn');
+                    addButton.classList.add('hidden');
+                    if (removeButton) { removeButton.classList.remove('hidden'); }
+                }
+            };
+            const removeFromCart = (event) => {
+                let currentCount = parseInt(cartItemCount.textContent);
+                if (currentCount > 0) { currentCount--; cartItemCount.textContent = currentCount; }
+                const removeButton = event.target;
+                const parentDiv = removeButton.closest('.flex.space-x-2');
+                if (parentDiv) {
+                    const addButton = parentDiv.querySelector('.add-to-cart-btn');
+                    removeButton.classList.add('hidden');
+                    if (addButton) { addButton.classList.remove('hidden'); }
+                }
+            };
+            const addToWishlist = (event) => {
+                const button = event.currentTarget;
+                const heartIcon = button.querySelector('i');
+                const productCard = button.closest('.product-card-zoom');
+                if (heartIcon.classList.contains('far')) {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    alert('Product added to wishlist!');
+                    console.log('Added to wishlist:', productCard ? productCard.querySelector('h3').textContent : 'Unknown product');
+                } else {
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
+                    alert('Product removed from wishlist!');
+                    console.log('Removed from wishlist:', productCard ? productCard.querySelector('h3').textContent : 'Unknown product');
+                }
+            };
+
+            addToCartButtons.forEach(button => { button.addEventListener('click', addToCart); });
+            removeFromCartButtons.forEach(button => { button.addEventListener('click', removeFromCart); });
+            addToWishlistButtons.forEach(button => { button.addEventListener('click', addToWishlist); });
+
+            const searchInput = document.getElementById('search-input');
+            const searchSuggestionsContainer = document.getElementById('search-suggestions');
+            const allSuggestions = [
+                "Lord Ganesha Murti", "Lord Hanuman Murti", "Lord Shiva Murti", "Shree Swami Samarth Murti",
+                "Shree Ram Lalla Murti", "Shree Vitthal Rukmini Murti", "Chhatrapati Shivaji Maharaj Murti",
+                "Lucky Tortoise", "Home Decor items", "Birthday Gifts", "Anniversary Gifts", "Diwali Gifts",
+                "Car Accessories", "Kitchen Appliances", "Books", "Electronics", "Fashion", "Jewelry",
+                "Mobile Phones", "Wall Art", "Wall Paintings", "Mugs"
+            ];
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                searchSuggestionsContainer.innerHTML = '';
+                if (query.length > 0) {
+                    const filteredSuggestions = allSuggestions.filter(suggestion => suggestion.toLowerCase().includes(query));
+                    if (filteredSuggestions.length > 0) {
+                        filteredSuggestions.forEach(suggestion => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                            suggestionItem.textContent = suggestion;
+                            suggestionItem.addEventListener('click', () => { searchInput.value = suggestion; searchSuggestionsContainer.classList.add('hidden'); });
+                            searchSuggestionsContainer.appendChild(suggestionItem);
+                        });
+                        searchSuggestionsContainer.classList.remove('hidden');
+                    } else { searchSuggestionsContainer.classList.add('hidden'); }
+                } else { searchSuggestionsContainer.classList.add('hidden'); }
+            });
+
+            document.addEventListener('click', (event) => {
+                const isClickInsideSearchBar = searchInput.parentElement.contains(event.target);
+                const isClickInsideSuggestions = searchSuggestionsContainer.contains(event.target);
+                if (!isClickInsideSearchBar && !isClickInsideSuggestions) { searchSuggestionsContainer.classList.add('hidden'); }
+            });
+
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value === '') {
+                     searchSuggestionsContainer.innerHTML = '';
+                    const popularSuggestions = ["Lord Ganesha Murti", "Home Decor items", "Birthday Gifts", "Wall Art", "Mugs"];
+                    popularSuggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => { searchInput.value = suggestion; searchSuggestionsContainer.classList.add('hidden'); });
+                        searchSuggestionsContainer.appendChild(suggestionItem);
+                    });
+                     searchSuggestionsContainer.classList.remove('hidden');
+                } else {
+                    searchInput.dispatchEvent(new Event('input'));
+                }
+            });
+
+            const mainHeader = document.getElementById('main-header');
+            let lastScrollY = 0;
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > lastScrollY && currentScrollY > 0) {
+                    mainHeader.classList.remove('header-visible');
+                    mainHeader.classList.add('header-hidden');
+                } else if (currentScrollY === 0) {
+                    mainHeader.classList.remove('header-hidden');
+                    mainHeader.classList.add('header-visible');
+                }
+                lastScrollY = currentScrollY;
+            });
+        });
+    </script>
+</body>
+</html>

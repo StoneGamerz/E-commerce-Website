@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giftoji Customer Support Chatbot</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 80vh; /* Fixed height for the chat window */
+            max-height: 700px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        #chat-header {
+            background-color: rgba(237, 84, 93, 255); /* primary-red */
+            color: white;
+            padding: 18px 25px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #e9e9e9;
+            scroll-behavior: smooth; /* Smooth scrolling for new messages */
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            font-size: 1rem;
+            line-height: 1.4;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            background-color: rgba(237, 84, 93, 255); /* primary-red */
+            color: white;
+            border-bottom-right-radius: 5px; /* Tapered edge */
+        }
+
+        .chat-message.bot {
+            align-self: flex-start;
+            background-color: #ffffff;
+            color: #333;
+            border: 1px solid #ddd;
+            border-bottom-left-radius: 5px; /* Tapered edge */
+        }
+        
+        .chat-message.bot.thinking {
+            font-style: italic;
+            color: #777;
+            background-color: #f0f0f0;
+        }
+
+        #chat-input-container {
+            display: flex;
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            gap: 10px;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: 1px solid #cccccc;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1.05rem;
+            transition: border-color 0.3s ease;
+        }
+
+        #chat-input:focus {
+            border-color: rgba(237, 84, 93, 255); /* primary-red */
+            box-shadow: 0 0 0 3px rgba(237, 84, 93, 0.2);
+        }
+
+        #chat-send-button {
+            background-color: rgba(237, 84, 93, 255); /* primary-red */
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #chat-send-button:hover {
+            background-color: rgba(200, 70, 78, 255); /* Darker red on hover */
+            transform: translateY(-1px);
+        }
+        #chat-send-button:active {
+            transform: translateY(0);
+        }
+
+        /* Initial suggestions styling */
+        .suggestion-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .suggestion-button {
+            background-color: #f0f0f0;
+            color: #555;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .suggestion-button:hover {
+            background-color: #e0e0e0;
+            color: #333;
+            border-color: #ccc;
+        }
+        
+        .loading-dots {
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span {
+            animation-name: bounce;
+            animation-duration: 1.4s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            animation-fill-mode: both;
+            opacity: 0;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.2em; /* Make dots slightly larger */
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: 0s; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+   
+    <iframe
+    src="https://www.chatbase.co/chatbot-iframe/strX9-VFquj1aDntbZ-3J"
+    width="100%"
+    style="height: 100%; min-height: 700px"
+    frameborder="0"
+></iframe>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chat-messages');
+            const chatInput = document.getElementById('chat-input');
+            const chatSendButton = document.getElementById('chat-send-button');
+
+            // Add welcome message and initial suggestions
+            function displayInitialMessage() {
+                const welcomeMessage = "Hello! I'm your Giftoji support chatbot. How can I assist you today?";
+                const suggestions = [
+                    { text: "Payment Issues", query: "Payment Issues" },
+                    { text: "Login Help", query: "Login Help" },
+                    { text: "Register Account", query: "Register Account" },
+                    { text: "Delivery Status", query: "Delivery Status" },
+                    { text: "Other Issues", query: "Other Issue" }
+                ];
+
+                addBotMessage(welcomeMessage, suggestions);
+            }
+
+            // Function to add a message to the chat window
+            function addMessage(sender, text, isThinking = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('chat-message', sender);
+                if (isThinking) {
+                    messageDiv.classList.add('thinking');
+                }
+                messageDiv.innerHTML = text; // Use innerHTML to allow for loading dots
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+                return messageDiv; // Return the created message div for potential updates
+            }
+
+            // Function to add a bot message with optional suggestions
+            function addBotMessage(text, suggestions = []) {
+                const messageDiv = addMessage('bot', text);
+                if (suggestions.length > 0) {
+                    const suggestionButtonsContainer = document.createElement('div');
+                    suggestionButtonsContainer.classList.add('suggestion-buttons');
+                    suggestions.forEach(s => {
+                        const button = document.createElement('button');
+                        button.classList.add('suggestion-button');
+                        button.textContent = s.text;
+                        button.dataset.query = s.query;
+                        button.addEventListener('click', () => {
+                            chatInput.value = s.query;
+                            sendMessage();
+                        });
+                        suggestionButtonsContainer.appendChild(button);
+                    });
+                    messageDiv.appendChild(suggestionButtonsContainer);
+                }
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Ensure scroll to bottom after adding suggestions
+            }
+
+            // Function to get chatbot response from backend
+            async function getBotResponse(userMessage) {
+                // Placeholder for thinking message
+                const thinkingMessageDiv = addMessage('bot', '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>', true);
+                chatInput.disabled = true;
+                chatSendButton.disabled = true;
+
+                try {
+                    // This URL should point to your Python Flask backend endpoint
+                    const backendUrl = 'http://localhost:5000/chat'; // IMPORTANT: Change this if your backend is hosted elsewhere
+
+                    const response = await fetch(backendUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: userMessage }),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Backend error: ${response.status} ${response.statusText} - ${errorData.error || 'Unknown error'}`);
+                    }
+
+                    const data = await response.json();
+                    thinkingMessageDiv.remove(); // Remove thinking message
+                    return data.response;
+
+                } catch (error) {
+                    console.error('Error fetching bot response:', error);
+                    thinkingMessageDiv.remove(); // Remove thinking message
+                    return "Oops! I'm having trouble connecting to my brain. Please try again later or contact our human support.";
+                } finally {
+                    chatInput.disabled = false;
+                    chatSendButton.disabled = false;
+                    chatInput.focus();
+                }
+            }
+
+            // Send message function
+            async function sendMessage() {
+                const userMessage = chatInput.value.trim();
+                if (userMessage === '') return;
+
+                addMessage('user', userMessage);
+                chatInput.value = ''; // Clear input
+
+                const botResponse = await getBotResponse(userMessage);
+                addBotMessage(botResponse);
+            }
+
+            // Event Listeners
+            chatSendButton.addEventListener('click', sendMessage);
+
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // Display initial welcome message and suggestions when the page loads
+            displayInitialMessage();
+        });
+        
+    </script>
+</body>
+</html>

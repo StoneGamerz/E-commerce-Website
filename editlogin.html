@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Login Details - Giftoji India</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, updateEmail, updatePassword, updateProfile, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables (provided by the Canvas environment)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        let app;
+        let auth;
+        let db;
+        let currentUserId = null;
+        let isFirebaseReady = false;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Sign in with custom token if available, otherwise anonymously
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) {
+                        if (initialAuthToken) {
+                            try {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } catch (error) {
+                                console.error("Error signing in with custom token:", error);
+                                // Fallback to anonymous sign-in if custom token fails
+                                await signInAnonymously(auth);
+                            }
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                    currentUserId = auth.currentUser?.uid || crypto.randomUUID();
+                    isFirebaseReady = true;
+                    console.log("Firebase Auth State Changed. User ID:", currentUserId);
+                    if (document.readyState === 'complete') {
+                        initializePage();
+                    }
+                });
+            } catch (e) {
+                console.error("Firebase initialization error:", e);
+                document.getElementById('status-message').textContent = 'Error: Firebase initialization failed. Check console for details.';
+                document.getElementById('status-message').classList.add('text-red-500');
+            }
+        } else {
+            console.warn("Firebase config not found. Running without Firebase features.");
+            document.getElementById('status-message').textContent = 'Warning: Firebase is not configured. Functions will not work.';
+            document.getElementById('status-message').classList.add('text-yellow-500');
+            isFirebaseReady = true; // Allow page to load even without Firebase
+            if (document.readyState === 'complete') {
+                initializePage();
+            }
+        }
+
+
+        // Function to display status messages
+        function showStatusMessage(message, isError = false) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.classList.remove('text-green-500', 'text-red-500');
+            if (isError) {
+                statusDiv.classList.add('text-red-500');
+            } else {
+                statusDiv.classList.add('text-green-500');
+            }
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.classList.remove('text-green-500', 'text-red-500');
+            }, 5000);
+        }
+
+        // Function to load user data from Firestore
+        async function loadUserData() {
+            if (!isFirebaseReady || !currentUserId) {
+                console.log("Firebase not ready or no user ID to load data.");
+                return;
+            }
+
+            const userRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profile`, 'details');
+            try {
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    document.getElementById('name').value = userData.name || '';
+                    document.getElementById('email').value = auth.currentUser.email || userData.email || '';
+                    document.getElementById('mobile').value = userData.mobile || '';
+                    showStatusMessage("User data loaded.", false);
+                } else {
+                    console.log("No profile data found for this user in Firestore.");
+                    // Pre-fill email if logged in via Firebase Auth
+                    if (auth.currentUser && auth.currentUser.email) {
+                        document.getElementById('email').value = auth.currentUser.email;
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                showStatusMessage("Failed to load user data: " + error.message, true);
+            }
+        }
+
+        // Function to save user data to Firestore
+        async function saveUserData(name, mobile) {
+            if (!isFirebaseReady || !currentUserId) {
+                console.log("Firebase not ready or no user ID to save data.");
+                showStatusMessage("Login to save data.", true);
+                return false;
+            }
+
+            const userRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profile`, 'details');
+            try {
+                await setDoc(userRef, {
+                    name: name,
+                    mobile: mobile,
+                    // Store email in Firestore as well, though Firebase Auth manages it primarily
+                    email: auth.currentUser.email
+                }, { merge: true }); // Use merge: true to avoid overwriting other fields
+                console.log("User data saved to Firestore.");
+                return true;
+            } catch (error) {
+                console.error("Error saving user data to Firestore:", error);
+                showStatusMessage("Failed to save user data to Firestore: " + error.message, true);
+                return false;
+            }
+        }
+
+        // Initialize page elements and event listeners after DOM is loaded and Firebase is ready
+        function initializePage() {
+            const editForm = document.getElementById('edit-form');
+            if (editForm) {
+                editForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (!isFirebaseReady || !auth.currentUser) {
+                        showStatusMessage("Please log in to update your details.", true);
+                        return;
+                    }
+
+                    const emailInput = document.getElementById('email');
+                    const passwordInput = document.getElementById('password');
+                    const nameInput = document.getElementById('name');
+                    const mobileInput = document.getElementById('mobile');
+
+                    const newEmail = emailInput.value.trim();
+                    const newPassword = passwordInput.value.trim();
+                    const newName = nameInput.value.trim();
+                    const newMobile = mobileInput.value.trim();
+
+                    let updateSuccessful = true;
+
+                    // Update Email
+                    if (newEmail && newEmail !== auth.currentUser.email) {
+                        try {
+                            await updateEmail(auth.currentUser, newEmail);
+                            showStatusMessage("Email updated successfully!", false);
+                        } catch (error) {
+                            console.error("Error updating email:", error);
+                            showStatusMessage("Failed to update email: " + error.message, true);
+                            updateSuccessful = false;
+                        }
+                    }
+
+                    // Update Password
+                    if (newPassword) { // Only update if password field is not empty
+                        try {
+                            await updatePassword(auth.currentUser, newPassword);
+                            showStatusMessage("Password updated successfully!", false);
+                            passwordInput.value = ''; // Clear password field after successful update
+                        } catch (error) {
+                            console.error("Error updating password:", error);
+                            showStatusMessage("Failed to update password: " + error.message, true);
+                            updateSuccessful = false;
+                        }
+                    }
+
+                    // Update Profile (display name)
+                    if (newName && newName !== auth.currentUser.displayName) {
+                        try {
+                            await updateProfile(auth.currentUser, { displayName: newName });
+                            showStatusMessage("Name updated successfully!", false);
+                        } catch (error) {
+                            console.error("Error updating profile name:", error);
+                            showStatusMessage("Failed to update name: " + error.message, true);
+                            updateSuccessful = false;
+                        }
+                    }
+
+                    // Save other user data (like mobile) to Firestore
+                    if (updateSuccessful) {
+                        const firestoreSaveSuccess = await saveUserData(newName, newMobile);
+                        if (firestoreSaveSuccess) {
+                            showStatusMessage("All details updated successfully!", false);
+                        } else {
+                            showStatusMessage("Some details updated, but Firestore save failed.", true);
+                        }
+                    }
+                });
+            }
+
+            // Load initial data if Firebase is ready
+            if (isFirebaseReady && auth.currentUser) {
+                loadUserData();
+            } else if (isFirebaseReady && !auth.currentUser) {
+                showStatusMessage("Please login to view/edit your details.", true);
+            }
+        }
+
+        // Call initializePage when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isFirebaseReady) {
+                initializePage();
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+        .bg-primary-red {
+            background-color: rgba(237, 84, 93, 255);
+        }
+        .text-primary-red {
+            color: rgba(237, 84, 93, 255);
+        }
+        .border-primary-red {
+            border-color: rgba(237, 84, 93, 255);
+        }
+        .hover\:bg-primary-red-darker:hover {
+            background-color: rgba(200, 70, 78, 255);
+        }
+        /* New styles for header hiding/showing with increased speed */
+.header-hidden {
+    transform: translateY(-100%);
+    transition: transform 0.2s ease-in-out; /* Speed adjusted to 0.2s */
+}
+.header-visible {
+    transform: translateY(0);
+    transition: transform 0.2s ease-in-out; /* Speed adjusted to 0.2s */
+}
+    </style>
+</head>
+<body>
+    <!-- Header Section (Copied from homepage.html) -->
+    <header id="main-header" class="bg-primary-red text-white py-3 px-4 shadow-md sticky top-0 z-50 header-visible">
+        <div class="container mx-auto flex items-center justify-between flex-wrap gap-2">
+            <!-- Logo -->
+            <a href="homepage.html" class="text-2xl font-bold rounded-md px-2 py-1 hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Giftoji India</a>
+
+            <!-- Search Bar -->
+            <div class="flex-grow max-w-xl mx-4 order-2 md:order-none w-full md:w-auto relative">
+                <div class="relative flex items-center bg-white rounded-full overflow-hidden shadow-md">
+                    <input type="text" id="search-input" placeholder="Search here!" class="flex-grow p-2 pl-4 focus:outline-none text-gray-800 bg-transparent border-none">
+                    <button class="bg-transparent text-primary-red p-2 px-4 h-full flex items-center justify-center hover:text-primary-red-darker transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+                <div id="search-suggestions" class="absolute left-0 right-0 mt-1 bg-white rounded-md shadow-lg hidden z-20 border border-gray-200 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- Navigation Links/Icons -->
+            <nav class="flex items-center space-x-4 order-3 md:order-none w-full md:w-auto justify-center md:justify-end">
+                <a href="account.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md transition-colors duration-200">
+                    <span class="text-sm block">Hello, Sign In</span>
+                    <span class="font-bold block">Accounts & Lists</span>
+                </a>
+                <a href="cart.html" class="text-white hover:text-white hover:bg-primary-red-darker p-2 rounded-md relative transition-colors duration-200">
+                    <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-item-count" class="absolute -top-1 -right-1 bg-white text-primary-red text-xs font-bold rounded-full px-2 py-0.5">0</span>
+                    <span class="hidden md:inline ml-1 font-bold">Cart</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sub-navigation / Departments Bar (Copied from homepage.html) -->
+    <!-- <nav class="bg-primary-red text-white py-2 shadow-sm border-t border-white">
+        <div class="container mx-auto flex items-center justify-start overflow-x-hidden overflow-y-hidden whitespace-nowrap scroll-smooth py-1 px-4">
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">All</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Great Deals</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Birthday Gifts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Car Decors</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Murti's</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Home Decors</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Gift Cards</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Anniversary Gifts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Diwali Gifts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">3D Arts</a>
+            <a href="homepage.html" class="px-3 py-1 rounded-md hover:bg-primary-red-darker hover:text-white transition-colors duration-200">Fathers Day Gifts</a>
+        </div>
+    </nav> -->
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto mt-8 p-4">
+        <h1 class="text-3xl font-bold text-primary-red mb-6">Edit Login Details</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 border border-primary-red max-w-md mx-auto">
+            <div id="status-message" class="mb-4 text-center text-sm font-medium"></div>
+            <form id="edit-form">
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name:</label>
+                    <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Your Name">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                    <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="your.email@example.com">
+                </div>
+                <div class="mb-4">
+                    <label for="mobile" class="block text-gray-700 text-sm font-bold mb-2">Mobile Number:</label>
+                    <input type="tel" id="mobile" name="mobile" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., +91 9876543210">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">New Password (leave blank to keep current):</label>
+                    <input type="password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="********">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="bg-primary-red text-white font-bold py-2 px-4 rounded-md hover:bg-primary-red-darker focus:outline-none focus:shadow-outline">Save Changes</button>
+                    <a href="account.html" class="inline-block align-baseline font-bold text-sm text-primary-red hover:text-primary-red-darker">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer Section (Copied from homepage.html) -->
+    <footer class="bg-primary-red text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Get to Know Us</h4>
+                    <ul>
+                        <li><a href="aboutus.html" class="text-sm hover:underline">About Us</a></li>
+                        <li><a href="https://wa.me/c/919004305188" class="text-sm hover:underline">Contact Us</a></li>
+                        <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=giftojiindia@gmail.com&su=Website%20Inquiry&body=Hello,%20I%20have%20a%20question%20regarding..." target="_blank" class="text-sm hover:underline">Email: giftojiindia@gmail.com</a></li>
+                        <li><a href="getsupport.html" class="text-sm hover:underline">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Social Media Links</h4>
+                    <ul>
+                        <li><a href="https://www.instagram.com/giftojiindia/" class="text-sm hover:underline">Instagram</a></li>
+                        <li><a href="https://www.facebook.com/people/Giftojiindia/61572679144465/#" class="text-sm hover:underline">Facebook</a></li>
+                        <li><a href="#" class="text-sm hover:underline">LinkedIn</a></li>
+                        <li><a href="#" class="text-sm hover:underline">X Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3 uppercase">Newsletter</h4>
+                    <p class="text-sm mb-4">Get unique, Hatke gift ideas and latest offers delivered to your inbox</p>
+                    <div class="flex items-center bg-white rounded-full p-1 shadow-md">
+                        <input type="email" placeholder="Your e-mail" class="flex-grow p-2 pl-4 rounded-l-full focus:outline-none text-gray-800 bg-transparent">
+                        <button class="bg-primary-red text-white rounded-full p-2 hover:bg-primary-red-darker transition-colors duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-3">Helpful Links</h4>
+                    <ul>
+                        <li><a href="account.html" class="text-sm hover:underline">Your Account</a></li>
+                        <li><a href="yourorder.html" class="text-sm hover:underline">Your Orders</a></li>
+                        <li><a href="yourwishlist.html" class="text-sm hover:underline">Your Wishlist</a></li>
+                        <li><a href="cart.html" class="text-sm hover:underline">Your Shopping Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white pt-6 mt-6">
+                <p class="text-sm">&copy; 2025, GiftojiIndia.com, Inc. or its affiliates</p>
+                <div class="flex justify-center space-x-4 mt-2">
+                    <a href="#" class="text-white hover:underline text-sm">Refund Policy</a>
+                    <a href="giftoji privacy policy.docx" class="text-white hover:underline text-sm">Privacy Policy</a>
+                    <a href="#" class="text-white hover:underline text-sm">Terms & Condition</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const searchSuggestionsContainer = document.getElementById('search-suggestions');
+            const cartItemCount = document.getElementById('cart-item-count'); 
+
+            const allSuggestions = [
+                "Lord Ganesha Murti", "Lord Hanuman Murti", "Lord Shiva Murti",
+                "Shree Swami Samarth Murti", "Shree Ram Lalla Murti", "Shree Vitthal Rukmini Murti",
+                "Chhatrapati Shivaji Maharaj Murti", "Lucky Tortoise", "Home Decor items",
+                "Birthday Gifts", "Anniversary Gifts", "Diwali Gifts", "Car Accessories",
+                "Kitchen Appliances", "Books", "Electronics", "Fashion", "Jewelry", "Mobile Phones"
+            ];
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                searchSuggestionsContainer.innerHTML = '';
+
+                if (query.length > 0) {
+                    const filteredSuggestions = allSuggestions.filter(suggestion =>
+                        suggestion.toLowerCase().includes(query)
+                    );
+
+                    if (filteredSuggestions.length > 0) {
+                        filteredSuggestions.forEach(suggestion => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                            suggestionItem.textContent = suggestion;
+                            suggestionItem.addEventListener('click', () => {
+                                searchInput.value = suggestion;
+                                searchSuggestionsContainer.classList.add('hidden');
+                            });
+                            searchSuggestionsContainer.appendChild(suggestionItem);
+                        });
+                        searchSuggestionsContainer.classList.remove('hidden');
+                    } else {
+                        searchSuggestionsContainer.classList.add('hidden');
+                    }
+                } else {
+                    searchSuggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                const isClickInsideSearchBar = searchInput.parentElement.contains(event.target);
+                const isClickInsideSuggestions = searchSuggestionsContainer.contains(event.target);
+
+                if (!isClickInsideSearchBar && !isClickInsideSuggestions) {
+                    searchSuggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value === '') {
+                     searchSuggestionsContainer.innerHTML = '';
+                    const popularSuggestions = ["Lord Ganesha Murti", "Home Decor items", "Birthday Gifts"];
+                    popularSuggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-800');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            searchInput.value = suggestion;
+                            searchSuggestionsContainer.classList.add('hidden');
+                        });
+                        searchSuggestionsContainer.appendChild(suggestionItem);
+                    });
+                     searchSuggestionsContainer.classList.remove('hidden');
+                } else {
+                    searchInput.dispatchEvent(new Event('input'));
+                }
+            });
+        });
+               // --- Header Visibility on Scroll (Revised) ---
+const mainHeader = document.getElementById('main-header');
+let lastScrollY = 0; // Initialize to 0 for initial state at the top
+
+window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY && currentScrollY > 0) {
+        // Scrolling down AND not at the very top, so hide the header
+        mainHeader.classList.remove('header-visible');
+        mainHeader.classList.add('header-hidden');
+    } else if (currentScrollY === 0) {
+        // At the very top of the page, so show the header
+        mainHeader.classList.remove('header-hidden');
+        mainHeader.classList.add('header-visible');
+    }
+    // If scrolling up but not at the very top (currentScrollY > 0),
+    // the header remains in its current state (hidden).
+
+    lastScrollY = currentScrollY; // Update last scroll position for the next check
+});
+    </script>
+</body>
+</html>
